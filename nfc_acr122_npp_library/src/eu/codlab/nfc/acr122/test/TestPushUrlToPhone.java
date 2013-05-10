@@ -69,7 +69,7 @@ public class TestPushUrlToPhone
 			terminals = factory.terminals().list();          
 			if (terminals.size() == 0) {
 				System.out.println("There are not terminals.");
-				terminals = null;			 
+				terminals = null;
 			}
 			else {
 				terminal=terminals.get(0);

@@ -29,14 +29,14 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import com.sun.jndi.toolkit.url.Uri;
-
+import eu.codlab.nfc.acr122.api.Acr122uAPI;
 import eu.codlab.nfc.stack.NdefMessage;
-import eu.codlab.nfc.stack.NdefRecord;
 
 @SuppressWarnings("restriction")
 public class IsmbNppConnectionSend {
 
+	private Acr122uAPI _api;
+	
 	private final static int BLOCK_SIZE = 250;
 
 	public final static int INITIATOR = 0;
@@ -93,6 +93,9 @@ public class IsmbNppConnectionSend {
 				}
 				ch = card.getBasicChannel();
 				System.out.println(card.getProtocol());   
+				_api= new Acr122uAPI(t, ch, true);
+				_api.setBuzzerState(false);
+				System.out.println("firmware = "+_api.getFirmwareVersion());
 			} 
 			else {
 				throw new IsmbNppException("Device not supported, only ACS ACR122 is supported now");
@@ -272,31 +275,7 @@ public class IsmbNppConnectionSend {
 				instruction.length);
 		cmd = Util.appendToByteArray(cmd, payload);
 
-		if (debugMode)
-			Util.debugAPDUs(cmd, null);
-
-		try {
-			CommandAPDU c = new CommandAPDU(cmd);
-			ResponseAPDU r = ch.transmit(c);
-
-			byte[] ra = r.getBytes();
-
-			if (debugMode)
-				Util.debugAPDUs(null, ra);
-
-			/* check whether APDU command was accepted by the Controller */
-			if (r.getSW1() == 0x63 && r.getSW2() == 0x27) {
-				throw new CardException(
-						"wrong checksum from contactless response");
-			} else if (r.getSW1() == 0x63 && r.getSW2() == 0x7f) {
-				throw new CardException("wrong PN53x command");
-			} else if (r.getSW1() != 0x90 && r.getSW2() != 0x00) {
-				throw new CardException("unknown error");
-			}
-			return Util.subByteArray(ra, 2, ra.length - 4);
-		} catch (CardException e) {
-			throw new IsmbNppException("problem with transmitting data");
-		}
+		return _api.transceive(cmd);
 	}
 
 
@@ -307,16 +286,9 @@ public class IsmbNppConnectionSend {
 		}catch(Exception e){
 
 		}
-
-		try {
-			byte[] initiatorPayload = { (byte) 0x00, (byte) 0x00
-			};
-
-			transceive(this.RFCONFIGURATION, initiatorPayload);        		
-		} catch (Exception e) {e.printStackTrace();}
-		System.out.println("power downing it.");
-
-
+		_api.turnAntennaOn();
+		
+		
 		try{
 			Thread.sleep(1000);
 		}catch(Exception e){
@@ -371,13 +343,7 @@ public class IsmbNppConnectionSend {
 
 		}
 
-		try {
-			byte[] initiatorPayload = { (byte) 0x01, (byte) 0x03
-			};
-
-			transceive(this.RFCONFIGURATION, initiatorPayload);        		
-		} catch (Exception e) {e.printStackTrace();}
-		System.out.println("power downing it.");
+		_api.turnAntennaOff();
 	}
 
 	public byte [] sendData(){
