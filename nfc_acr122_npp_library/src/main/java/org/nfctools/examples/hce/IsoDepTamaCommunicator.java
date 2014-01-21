@@ -15,6 +15,8 @@ import org.nfctools.utils.NfcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.codlab.nfc.acr122.api.Acr122uCardAPI;
+
 public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -49,6 +51,11 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
             InListPassiveTargetRespPoll inListPassiveTargetResp = sendMessage(new InListPassiveTargetReqPoll((byte)1, (byte)0,
                     new byte[10]));
             System.out.println("target "+inListPassiveTargetResp.getNumberOfTargets());
+
+
+            Acr122uCardAPI card = new Acr122uCardAPI(null,true);
+
+
 			if (inListPassiveTargetResp.getNumberOfTargets() > 0) {
                 System.out.println("Having UID "+inListPassiveTargetResp.getUID());
 				log.info("TargetData: " + NfcUtils.convertBinToASCII(inListPassiveTargetResp.getTargetData()));

@@ -21,12 +21,12 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 			notifyStatus(TerminalStatus.WAITING);
 			try {
 				//cardTerminal.waitForCardPresent(30000);
-                cardTerminal.waitForCardPresent(5000);
+                cardTerminal.waitForCardPresent(10000);
 				Card card = null;
 				try{
 					card = cardTerminal.connect("direct");
 				}catch(Exception e){
-                    e.printStackTrace();
+                    //e.printStackTrace();
 					card = cardTerminal.connect("*");
 				}
 				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP,
@@ -37,12 +37,12 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 				}
 				catch (Exception e1) {
 					card.disconnect(true);
-					e1.printStackTrace();
+					//e1.printStackTrace();
 					try {
 						Thread.sleep(1000);
 					}
 					catch (InterruptedException e) {
-						break;
+						//break;
 					}
 				}
 				finally {
@@ -50,8 +50,8 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 				}
 			}
 			catch (CardException e) {
-				e.printStackTrace();
-				break;
+				//e.printStackTrace();
+				//break;
 			}
 		}
 	}

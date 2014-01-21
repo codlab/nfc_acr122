@@ -59,14 +59,12 @@ public abstract class AbstractTamaCommunicator implements NFCIPCommunicator {
 	}
 
 	private byte[] sendMessageInternal(byte[] message) throws IOException {
-        System.out.println("Sending message:  " + NfcUtils.convertBinToASCII(message));
 		writer.write(message, 0, message.length);
 		byte[] responseBuffer = new byte[1024];
 		int responseLength = reader.read(responseBuffer, 0, responseBuffer.length);
 		byte[] response = new byte[responseLength];
 		System.arraycopy(responseBuffer, 0, response, 0, responseLength);
 
-		System.out.println("Received message: " + NfcUtils.convertBinToASCII(response));
 		return response;
 	}
 

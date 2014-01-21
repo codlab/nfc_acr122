@@ -27,7 +27,7 @@ public class TamaResponseDecoder {
 
 	@SuppressWarnings("unchecked")
 	public <T> T decodeMessage(byte[] message) throws TamaException {
-        System.out.println("having message > "+NfcUtils.convertBinToASCII(message));
+        //System.out.println("having message > "+NfcUtils.convertBinToASCII(message));
 		if (message[0] == (byte)0xD5) {
 			byte[] payload = new byte[message.length - 2];
 			System.arraycopy(message, 2, payload, 0, payload.length);
@@ -71,13 +71,13 @@ public class TamaResponseDecoder {
 
     private InListPassiveTargetResp createInListPassiveTargetResponse(byte[] payload) {
         byte[] targetData = new byte[payload.length - 1];
-        System.out.println("having listpassive > "+NfcUtils.convertBinToASCII(payload));
+        //System.out.println("having listpassive > "+NfcUtils.convertBinToASCII(payload));
         System.arraycopy(payload, 1, targetData, 0, targetData.length);
         return new InListPassiveTargetResp(payload[0], targetData);
     }
 	private InListPassiveTargetRespPoll createInListPassiveTargetResponsePolling(byte[] payload) {
 		byte[] targetData = new byte[payload.length - 1];
-        System.out.println("having listpassive poll > "+NfcUtils.convertBinToASCII(payload));
+        //System.out.println("having listpassive poll > "+NfcUtils.convertBinToASCII(payload));
 		System.arraycopy(payload, 1, targetData, 0, targetData.length);
 		return new InListPassiveTargetRespPoll(payload[0], targetData);
 	}
