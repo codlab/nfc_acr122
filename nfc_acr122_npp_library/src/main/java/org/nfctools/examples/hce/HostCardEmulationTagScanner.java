@@ -10,9 +10,11 @@ import org.nfctools.spi.acs.AbstractTerminalTagScanner;
 import org.nfctools.spi.acs.ApduTagReaderWriter;
 
 public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
+    private IOnData _listener;
 
-	protected HostCardEmulationTagScanner(CardTerminal cardTerminal) {
+	protected HostCardEmulationTagScanner(CardTerminal cardTerminal, IOnData listener) {
 		super(cardTerminal);
+        _listener = listener;
 	}
 
 	@Override
@@ -20,7 +22,9 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 		while (!Thread.interrupted()) {
 			notifyStatus(TerminalStatus.WAITING);
 			try {
-				//cardTerminal.waitForCardPresent(30000);
+                _listener.onError("Waiting for card...");
+
+                //cardTerminal.waitForCardPresent(30000);
                 cardTerminal.waitForCardPresent(10000);
 				Card card = null;
 				try{
@@ -33,7 +37,7 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 						null, card));
 				try {
 					IsoDepTamaCommunicator tamaCommunicator = new IsoDepTamaCommunicator(readerWriter, readerWriter);
-					tamaCommunicator.connectAsInitiator();
+					tamaCommunicator.connectAsInitiator(_listener);
 				}
 				catch (Exception e1) {
 					card.disconnect(true);
@@ -50,7 +54,7 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 				}
 			}
 			catch (CardException e) {
-				//e.printStackTrace();
+				e.printStackTrace();
 				//break;
 			}
 		}

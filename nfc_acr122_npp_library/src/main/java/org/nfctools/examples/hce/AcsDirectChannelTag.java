@@ -27,15 +27,9 @@ import org.nfctools.api.TagType;
 import org.nfctools.scio.Command;
 import org.nfctools.scio.Response;
 import org.nfctools.spi.acs.Acs;
-import org.nfctools.utils.NfcUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.codlab.nfc.acr122.Util;
 
 public class AcsDirectChannelTag extends Tag implements ApduTag {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private Card card;
 
 	public AcsDirectChannelTag(TagType tagType, byte[] generalBytes, Card card) {

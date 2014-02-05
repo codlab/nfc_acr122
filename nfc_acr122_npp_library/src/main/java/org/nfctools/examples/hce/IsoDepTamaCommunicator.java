@@ -1,6 +1,9 @@
 package org.nfctools.examples.hce;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.nfctools.io.ByteArrayReader;
 import org.nfctools.io.ByteArrayWriter;
@@ -12,14 +15,10 @@ import org.nfctools.spi.tama.response.DataExchangeResp;
 import org.nfctools.spi.tama.response.InListPassiveTargetResp;
 import org.nfctools.spi.tama.response.InListPassiveTargetRespPoll;
 import org.nfctools.utils.NfcUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.codlab.nfc.acr122.api.Acr122uCardAPI;
 
 public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private int messageCounter = 0;
 	private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
 	private static final byte[] AID_ANDROID = { (byte)0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
@@ -37,9 +36,10 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 		return result;
 	}
 
-	public void connectAsInitiator() throws IOException {
-		while (true) {
-            System.out.println("target ");
+	public void connectAsInitiator(IOnData listener) throws IOException {
+        boolean ok = false;
+		while (!ok) {
+            System.out.println("target2 ");
 
             //on some acr122u devices, the command needed here is
 			//InListPassiveTargetResp inListPassiveTargetResp = sendMessage(new InListPassiveTargetReq((byte)1, (byte)0,
@@ -48,15 +48,17 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
             //here is the fix for the cjurrent acr122 >
             //TODO codlab, add switch for auto data !
 
+            InListPassiveTargetReq in2 = sendMessage(new InListPassiveTargetReq((byte)1, (byte)0,
+                    new byte[10]));
             InListPassiveTargetRespPoll inListPassiveTargetResp = sendMessage(new InListPassiveTargetReqPoll((byte)1, (byte)0,
                     new byte[10]));
-            System.out.println("target "+inListPassiveTargetResp.getNumberOfTargets());
+            System.out.println("target2 "+inListPassiveTargetResp.getNumberOfTargets()+" "+in2.getMaxTargets());
 
 
             Acr122uCardAPI card = new Acr122uCardAPI(null,true);
 
 
-			if (inListPassiveTargetResp.getNumberOfTargets() > 0) {
+			if (inListPassiveTargetResp.getNumberOfTargets() > 0 || in2.getMaxTargets() > 0) {
                 System.out.println("Having UID "+inListPassiveTargetResp.getUID());
 				log.info("TargetData: " + NfcUtils.convertBinToASCII(inListPassiveTargetResp.getTargetData()));
 				if (inListPassiveTargetResp.isIsoDepSupported()) {
@@ -67,10 +69,28 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 					String dataIn = new String(resp.getDataOut());
 					System.out.println("Received: " + dataIn);
 					if (dataIn.startsWith("Hello")) {
-						exchangeData(inListPassiveTargetResp);
+						String result = exchangeDataToken(inListPassiveTargetResp);
+                        if(result != null){
+                            listener.onUserToken(result);
+                            ok=true;
+                        }else{
+                            listener.onError("Invalid response");
+                            ok=true;
+                        }
+                        break;
 					}
 				}
 				else {
+                    //here start browser with value
+                    listener.onUUId(inListPassiveTargetResp.getUID());
+                    ok=true;
+                    /*if(Desktop.isDesktopSupported()){
+                        try {
+                            Desktop.getDesktop().browse(new URI("http://codlab.eu/nfc/uid/"+inListPassiveTargetResp.getUID()));
+                            break;
+                        } catch (URISyntaxException e) {
+                        }
+                    }*/
                     System.out.println("IsoDep NOT Supported");
 				}
 				break;
@@ -83,6 +103,8 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 					throw new RuntimeException(e);
 				}
 			}
+
+            System.out.println("Quit");
 		}
 	}
 
@@ -97,15 +119,56 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
             System.out.println("Received: " + dataIn);
         }
     }
-	private void exchangeData(InListPassiveTargetRespPoll inListPassiveTargetResp) throws IOException {
+
+
+    private void exchangeData(InListPassiveTargetRespPoll inListPassiveTargetResp) throws IOException {
+        DataExchangeResp resp;
+        String dataIn;
+        while (true) {
+            byte[] dataOut = ("Message from desktop: " + messageCounter++).getBytes();
+            resp = sendMessage(new DataExchangeReq(inListPassiveTargetResp.getTargetId(), false, dataOut, 0,
+                    dataOut.length));
+            dataIn = new String(resp.getDataOut());
+
+            //here start browser if found
+            if(dataIn.indexOf("http://") == 0){
+                if(Desktop.isDesktopSupported())
+                    try {
+                        Desktop.getDesktop().browse(new URI(dataIn));
+                        break;
+                    } catch (URISyntaxException e) {
+                        System.out.println("Received: " + dataIn);
+                    }
+                else
+                    System.out.println("Received: " + dataIn);
+            }else{
+                System.out.println("Received: " + dataIn);
+            }
+        }
+        System.out.println("Quit reading");
+    }
+
+	private String exchangeDataToken(InListPassiveTargetRespPoll inListPassiveTargetResp) throws IOException {
 		DataExchangeResp resp;
 		String dataIn;
-		while (true) {
+        int test = 10;
+        boolean ok = false;
+		while (test > 0 && !ok) {
 			byte[] dataOut = ("Message from desktop: " + messageCounter++).getBytes();
 			resp = sendMessage(new DataExchangeReq(inListPassiveTargetResp.getTargetId(), false, dataOut, 0,
 					dataOut.length));
 			dataIn = new String(resp.getDataOut());
-            System.out.println("Received: " + dataIn);
+
+            //here start browser if found
+            if(dataIn.indexOf("http://") == 0){
+                ok = true;
+                return dataIn;
+            }else{
+                System.out.println("Received: " + dataIn);
+            }
+            test--;
 		}
+        System.out.println("Quit reading");
+        return null;
 	}
 }
