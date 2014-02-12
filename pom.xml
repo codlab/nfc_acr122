@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>org.nfctools</groupId>
 	<version>1.0-SNAPSHOT</version>
-	<artifactId>parent</artifactId>
+	<artifactId>nfc_acr122u</artifactId>
 	<packaging>pom</packaging>
 
 	<name>NFC Tools for Java</name>
@@ -22,6 +22,12 @@
 	</scm>
 
 	<developers>
+        <developer>
+            <name>Kevin Le PErf</name>
+            <email>codlabtech@gmail.com</email>
+            <organization>Codlabtech</organization>
+            <organizationUrl>http://www.grundid.de</organizationUrl>
+        </developer>
 		<developer>
 			<name>Adrian Stabiszewski</name>
 			<email>as@nfctools.org</email>
@@ -37,7 +43,7 @@
 		<slf4j-version>1.5.10</slf4j-version>
 	</properties>
 	<modules>
-        <module>nfc_acr122_npp_library</module>
+	        <module>nfc_acr122_npp_library</module>
 		<module>nfctools-api</module>
 		<module>nfctools-core</module>
 		<module>nfctools-ndef</module>

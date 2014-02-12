@@ -33,16 +33,47 @@ public class TerminalHandler {
 		knownTerminals.add(terminal);
 	}
 
+    /*
+    05 56 84 21 89
+
+    melanie.cabe@enseirb-matmeca.fr
+     */
+
 	public Terminal getAvailableTerminal() {
 		return getAvailableTerminal(null);
 	}
 
+    /*
+
+		TerminalFactory factory;
+		List<CardTerminal> terminals;
+		//List all available terminals
+		try {
+			System.out.println("Get factory");
+			factory = TerminalFactory.getDefault();
+			System.out.println("Get terminals");
+			terminals = factory.terminals().list();
+			if (terminals.size() == 0) {
+				System.out.println("There are not terminals.");
+				terminals = null;
+			}
+			else {
+				terminal=terminals.get(0);
+				System.out.println("Terminal name: "+terminal.getName());
+			}
+		}
+		catch (CardException c) {
+			System.out.print(c.getMessage());
+			terminals = null;
+		}
+     */
 	public Terminal getAvailableTerminal(String preferredTerminalName) {
 		try {
 			TerminalFactory terminalFactory = TerminalFactory.getDefault();
 			List<CardTerminal> terminals = terminalFactory.terminals().list();
+            System.out.println("Checking terminals ");
 			for (CardTerminal terminal : terminals) {
-				log.info("Checking terminal: " + terminal.getName());
+				System.out.println("Checking terminal: " + terminal.getName());
 				if (preferredTerminalName == null || preferredTerminalName.equals(terminal.getName())) {
 					for (Terminal knownTerminal : knownTerminals) {
 						if (knownTerminal.canHandle(terminal.getName())) {

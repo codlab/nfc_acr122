@@ -28,12 +28,7 @@ import org.nfctools.api.TagType;
 import org.nfctools.scio.Command;
 import org.nfctools.scio.Response;
 import org.nfctools.utils.NfcUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class AcsTag extends Tag implements ApduTag {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private Card card;
 	private CardChannel cardChannel;
 
@@ -63,11 +58,11 @@ public class AcsTag extends Tag implements ApduTag {
 				commandAPDU = new CommandAPDU(Apdu.CLS_PTS, command.getInstruction(), command.getP1(), command.getP2(),
 						command.getLength());
 			}
-			if (log.isDebugEnabled())
-				log.debug("command: " + NfcUtils.convertBinToASCII(commandAPDU.getBytes()));
+            //if (log.isDebugEnabled())
+            //	log.debug("command: " + NfcUtils.convertBinToASCII(commandAPDU.getBytes()));
 			ResponseAPDU responseAPDU = cardChannel.transmit(commandAPDU);
-			if (log.isDebugEnabled())
-				log.debug("response: " + NfcUtils.convertBinToASCII(responseAPDU.getBytes()));
+            //if (log.isDebugEnabled())
+            //	log.debug("response: " + NfcUtils.convertBinToASCII(responseAPDU.getBytes()));
 			return new Response(responseAPDU.getSW1(), responseAPDU.getSW2(), responseAPDU.getData());
 		}
 		catch (CardException e) {

@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.nfctools.utils.NfcUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Simple writer which directly writes data into an OutputStream without modification.
@@ -28,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ByteArrayOutputStreamWriter implements ByteArrayWriter {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	//private Logger log = LoggerFactory.getLogger(getClass());
 
 	private OutputStream outputStream;
 
@@ -38,8 +36,8 @@ public class ByteArrayOutputStreamWriter implements ByteArrayWriter {
 
 	@Override
 	public void write(byte[] data, int offset, int length) throws IOException {
-		if (log.isDebugEnabled())
-			log.debug(NfcUtils.convertBinToASCII(data, offset, length));
+		//if (log.isDebugEnabled())
+		//	log.debug(NfcUtils.convertBinToASCII(data, offset, length));
 		outputStream.write(data, offset, length);
 	}
 }

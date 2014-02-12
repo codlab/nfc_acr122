@@ -48,17 +48,17 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
             //here is the fix for the cjurrent acr122 >
             //TODO codlab, add switch for auto data !
 
-            InListPassiveTargetReq in2 = sendMessage(new InListPassiveTargetReq((byte)1, (byte)0,
+            InListPassiveTargetResp in2 = sendMessage(new InListPassiveTargetReq((byte)1, (byte)0,
                     new byte[10]));
             InListPassiveTargetRespPoll inListPassiveTargetResp = sendMessage(new InListPassiveTargetReqPoll((byte)1, (byte)0,
                     new byte[10]));
-            System.out.println("target2 "+inListPassiveTargetResp.getNumberOfTargets()+" "+in2.getMaxTargets());
+            System.out.println("target2 "+inListPassiveTargetResp.getNumberOfTargets()+" "+in2.getNumberOfTargets());
 
 
             Acr122uCardAPI card = new Acr122uCardAPI(null,true);
 
 
-			if (inListPassiveTargetResp.getNumberOfTargets() > 0 || in2.getMaxTargets() > 0) {
+			if (inListPassiveTargetResp.getNumberOfTargets() > 0 || in2.getNumberOfTargets() > 0) {
                 System.out.println("Having UID "+inListPassiveTargetResp.getUID());
 				log.info("TargetData: " + NfcUtils.convertBinToASCII(inListPassiveTargetResp.getTargetData()));
 				if (inListPassiveTargetResp.isIsoDepSupported()) {

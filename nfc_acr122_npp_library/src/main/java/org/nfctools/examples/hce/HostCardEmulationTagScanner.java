@@ -40,7 +40,8 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 					tamaCommunicator.connectAsInitiator(_listener);
 				}
 				catch (Exception e1) {
-					card.disconnect(true);
+                    e1.printStackTrace();
+                    card.disconnect(true);
 					//e1.printStackTrace();
 					try {
 						Thread.sleep(1000);

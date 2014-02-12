@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.nfctools</groupId>
 		<version>1.0-SNAPSHOT</version>
-		<artifactId>parent</artifactId>
+		<artifactId>nfc_acr122u</artifactId>
 		<relativePath>../</relativePath>
 	</parent>
 	<artifactId>nfctools-ndef</artifactId>

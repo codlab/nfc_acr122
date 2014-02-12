@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.nfctools.mf.block.MfTrailerBlockTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 sec
